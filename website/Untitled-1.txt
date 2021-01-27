@@ -1,0 +1,96 @@
+#include<iostream>
+#include<fstream>
+#include<set>
+#include<chrono>
+#include<vector>
+#include<algorithm>
+using namespace std;
+using namespace std::chrono;
+pair<pair<int,int>,bool> method_1(vector<int>,int);
+pair<pair<int,int>,bool> method_2(vector<int>,int);
+pair<pair<int,int>,bool> method_3(vector<int>,int);
+int main()
+{
+    int n,p;
+    cout<<"Enter the size of the array"<<endl;
+    strt:
+    cin>>n;
+    if(n<=0)
+    {
+        cout<<"Invalid value-Enter again"<<endl;
+        goto strt;
+    }
+
+    vector<int> arr(n);
+    cout<<"Enter the elements of the array"<<endl;
+    for(int i=0;i<n;++i)
+        cin>>arr[i];
+
+    cout<<"Enter the value of p"<<endl;
+    cin>>p;
+    pair<pair<int,int>,bool> pair;
+
+    auto start_1 = high_resolution_clock::now();
+	pair=method_1(arr,p);
+	auto stop_1 = high_resolution_clock::now(); 
+	auto duration_1 = duration_cast<nanoseconds>(stop_1 - start_1); 
+    (pair.second) ? cout<<"Yes It is possible as "<<p<<" = "<<pair.first.first<<" + "<<pair.first.second<<" exists " : cout<<"No It is not possible" ;
+	cout << ", Time taken : "<< duration_1.count() << " nanoseconds" << endl;
+
+    auto start_2 = high_resolution_clock::now();
+	pair=method_2(arr,p);
+	auto stop_2 = high_resolution_clock::now(); 
+	auto duration_2 = duration_cast<nanoseconds>(stop_2 - start_2); 
+    (pair.second) ? cout<<"Yes It is possible as "<<p<<" = "<<pair.first.first<<" + "<<pair.first.second<<" exists " : cout<<"No It is not possible" ;
+	cout << ", Time taken : "<< duration_2.count() << " nanoseconds" << endl;
+
+    auto start_3 = high_resolution_clock::now();
+	pair=method_3(arr,p);
+	auto stop_3 = high_resolution_clock::now(); 
+	auto duration_3 = duration_cast<nanoseconds>(stop_3 - start_3); 
+    (pair.second) ? cout<<"Yes It is possible as "<<p<<" = "<<pair.first.first<<" + "<<pair.first.second<<" exists " : cout<<"No It is not possible" ;
+	cout << ", Time taken : "<< duration_3.count() << " nanoseconds" << endl;
+
+    fstream file;
+    file.open("book.csv",ios::app);
+    file<<duration_1.count()<<","<<duration_2.count()<<","<<duration_3.count()<<endl;
+    file.close();
+}
+
+pair<pair<int,int>,bool> method_1(vector<int> arr,int p)
+{
+    int n=arr.size();
+    for(int i=0;i<n;++i)
+        for(int j=0;j<n;++j)
+            if(arr[i]+arr[j]==p)
+                return pair<pair<int,int>,bool>(pair<int,int>(arr[i],arr[j]),true);
+    return pair<pair<int,int>,bool>(pair<int,int>(0,0),false);
+}
+
+pair<pair<int,int>,bool> method_2(vector<int> arr,int p)
+{
+    set<int,less<int>> s(arr.begin(),arr.end());
+    set<int,less<int>>::iterator j;
+    for(auto itr=s.begin();itr!=s.end();++itr)
+        if((j=s.find(p-*(itr)))!=s.end())
+            return pair<pair<int,int>,bool>(pair<int,int>(*j,*itr),true);
+    return pair<pair<int,int>,bool>(pair<int,int>(0,0),false);
+}
+
+pair<pair<int,int>,bool> method_3(vector<int> arr,int p)
+{
+    sort(arr.begin(),arr.end());
+    int i,j;
+    i=0;
+    j=arr.size()-1;
+    while(i<=j)
+    {
+        if(p==arr[i]+arr[j])
+            return pair<pair<int,int>,bool>(pair<int,int>(arr[i],arr[j]),true);
+        else if(p>arr[i]+arr[j])
+            ++i;
+        else
+            --j;
+    }
+    return pair<pair<int,int>,bool>(pair<int,int>(0,0),false);
+}
